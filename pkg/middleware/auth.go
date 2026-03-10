@@ -87,10 +87,12 @@ func LoadValidPasswordToken(authClient *services.AuthClient) echo.MiddlewareFunc
 }
 
 // RequireAuthentication requires that the user be authenticated in order to proceed.
+// Unauthenticated users are redirected to the login page instead of receiving a 401 error.
 func RequireAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if u := c.Get(context.AuthenticatedUserKey); u == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized)
+			msg.Warning(c, "Please log in to access this page.")
+			return c.Redirect(http.StatusSeeOther, c.Echo().Reverse(routenames.Login))
 		}
 
 		return next(c)
@@ -101,6 +103,9 @@ func RequireAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 func RequireNoAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if u := c.Get(context.AuthenticatedUserKey); u != nil {
+			if user, ok := u.(*ent.User); ok {
+				msg.Warning(c, fmt.Sprintf("You are already logged in as %s. Please log out first to use another account.", user.Name))
+			}
 			return c.Redirect(http.StatusSeeOther, c.Echo().Reverse(routenames.Dashboard))
 		}
 

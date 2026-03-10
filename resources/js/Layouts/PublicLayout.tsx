@@ -3,11 +3,13 @@ import { ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { SharedProps } from "@/types/global";
 import { useFlashToasts } from "@/hooks/useFlashToast";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 export default function PublicLayout({ children }: { children: ReactNode }) {
   const { flash, auth } = usePage<SharedProps>().props;
 
   useFlashToasts(flash);
+  useAuthGuard();
 
   return (
     <div className="min-h-screen text-foreground flex flex-col">

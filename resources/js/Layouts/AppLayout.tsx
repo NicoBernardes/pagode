@@ -3,6 +3,7 @@ import AppLayoutTemplate from "@/Layouts/App/AppSidebarLayout";
 import { type BreadcrumbItem } from "@/types";
 import { type ReactNode } from "react";
 import { useFlashToasts } from "@/hooks/useFlashToast";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { SharedProps } from "@/types/global";
 import { Toaster } from "sonner";
 
@@ -19,6 +20,7 @@ export default function AppLayout({
   const { flash } = usePage<SharedProps>().props;
 
   useFlashToasts(flash);
+  useAuthGuard();
 
   return (
     <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
