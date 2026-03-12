@@ -62,6 +62,16 @@ payment:
     webhookSecret: "whsec_your_webhook_secret_here"
     currency: "usd"
 
+auth:
+  provider: "built-in"
+  casdoor:
+    endpoint: ""
+    clientId: ""
+    clientSecret: ""
+    certificate: ""
+    organizationName: ""
+    applicationName: ""
+
 chat:
   enabled: true
   defaultRoom: "general"

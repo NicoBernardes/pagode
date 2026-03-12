@@ -30,6 +30,7 @@ type Auth struct {
 	mail    *services.MailClient
 	orm     *ent.Client
 	Inertia *inertia.Inertia
+	casdoor *services.CasdoorClient
 }
 
 type RegisterForm struct {
@@ -68,6 +69,7 @@ func (h *Auth) Init(c *services.Container) error {
 	h.auth = c.Auth
 	h.mail = c.Mail
 	h.Inertia = c.Inertia
+	h.casdoor = c.Casdoor
 	return nil
 }
 
@@ -92,6 +94,17 @@ func (h *Auth) Routes(g *echo.Group) {
 }
 
 func (h *Auth) LoginPage(ctx echo.Context) error {
+	if h.casdoor != nil {
+		callbackURL := h.config.App.Host + ctx.Echo().Reverse(routenames.CasdoorCallback)
+		signinURL := h.casdoor.GetSigninURL(callbackURL, "pagode")
+		// Use Inertia location for external redirect so it works with Inertia AJAX requests.
+		if ctx.Request().Header.Get("X-Inertia") != "" {
+			ctx.Response().Header().Set("X-Inertia-Location", signinURL)
+			return ctx.NoContent(http.StatusConflict)
+		}
+		return ctx.Redirect(http.StatusSeeOther, signinURL)
+	}
+
 	canResetPassword := true
 
 	err := h.Inertia.Render(
@@ -176,12 +189,23 @@ func (h *Auth) Logout(ctx echo.Context) error {
 	} else {
 		msg.Danger(ctx, "An error occurred. Please try again.")
 	}
+
 	return redirect.New(ctx).
 		Route(routenames.Welcome).
 		Go()
 }
 
 func (h *Auth) RegisterPage(ctx echo.Context) error {
+	if h.casdoor != nil {
+		callbackURL := h.config.App.Host + ctx.Echo().Reverse(routenames.CasdoorCallback)
+		signupURL := h.casdoor.GetSignupURL(callbackURL, "pagode")
+		if ctx.Request().Header.Get("X-Inertia") != "" {
+			ctx.Response().Header().Set("X-Inertia-Location", signupURL)
+			return ctx.NoContent(http.StatusConflict)
+		}
+		return ctx.Redirect(http.StatusSeeOther, signupURL)
+	}
+
 	err := h.Inertia.Render(
 		ctx.Response().Writer,
 		ctx.Request(),
