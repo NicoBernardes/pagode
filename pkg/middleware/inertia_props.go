@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/occult/pagode/config"
 	"github.com/occult/pagode/pkg/context"
 	"github.com/occult/pagode/pkg/msg"
 	"github.com/romsar/gonertia/v2"
@@ -27,11 +28,18 @@ func InertiaProps() echo.MiddlewareFunc {
 				}
 			}
 
+			// Determine auth provider
+			authProvider := "built-in"
+			if cfg, ok := ctx.Get(context.ConfigKey).(*config.Config); ok && cfg.Auth.Provider != "" {
+				authProvider = cfg.Auth.Provider
+			}
+
 			// Set Inertia props
 			newCtx := gonertia.SetProps(ctx.Request().Context(), map[string]any{
 				"flash": flash,
 				"auth": map[string]any{
-					"user": user,
+					"user":     user,
+					"provider": authProvider,
 				},
 			})
 

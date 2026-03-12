@@ -1,6 +1,7 @@
 import { type BreadcrumbItem } from "@/types";
+import { SharedProps } from "@/types/global";
 import { Transition } from "@headlessui/react";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm, usePage } from "@inertiajs/react";
 import { FormEventHandler, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Password() {
+  const { auth } = usePage<SharedProps>().props;
   const passwordInput = useRef<HTMLInputElement>(null);
   const currentPasswordInput = useRef<HTMLInputElement>(null);
 
@@ -49,6 +51,25 @@ export default function Password() {
       },
     });
   };
+
+  if (auth.provider === "casdoor") {
+    return (
+      <AppLayout breadcrumbs={breadcrumbs}>
+        <Head title="Password settings" />
+        <SettingsLayout>
+          <div className="space-y-6">
+            <HeadingSmall
+              title="Update password"
+              description="Your password is managed by your identity provider"
+            />
+            <p className="text-sm text-muted-foreground">
+              To change your password, please visit your Casdoor account settings.
+            </p>
+          </div>
+        </SettingsLayout>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>

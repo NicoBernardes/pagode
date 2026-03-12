@@ -53,6 +53,7 @@ const (
 	ChatBanUser           = "chat.ban"
 	ChatUnbanUser         = "chat.unban"
 	ChatDeleteRoom        = "chat.room.delete"
+	CasdoorCallback       = "casdoor.callback"
 )
 
 func AdminEntityList(entityTypeName string) string {
