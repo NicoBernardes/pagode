@@ -73,7 +73,7 @@ type Container struct {
 	// Chat stores the chat room manager.
 	Chat *chat.RoomManager
 
-	// Casdoor stores the Casdoor client (nil when using built-in auth).
+	// Casdoor stores the Casdoor SSO client.
 	Casdoor *CasdoorClient
 
 	// Inertia for React
@@ -237,11 +237,8 @@ func (c *Container) initAuth() {
 	c.Auth = NewAuthClient(c.Config, c.ORM)
 }
 
-// initCasdoor initializes the Casdoor client if configured.
+// initCasdoor initializes the Casdoor SSO client.
 func (c *Container) initCasdoor() {
-	if c.Config.Auth.Provider != "casdoor" {
-		return
-	}
 	c.Casdoor = NewCasdoorClient(&c.Config.Auth.Casdoor)
 }
 
