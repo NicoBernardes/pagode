@@ -2,7 +2,9 @@ package services
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
 	"github.com/occult/pagode/config"
@@ -58,6 +60,17 @@ func (c *CasdoorClient) GetSignupURL(redirectURI, state string) string {
 // GetLogoutURL returns the Casdoor logout URL.
 func (c *CasdoorClient) GetLogoutURL() string {
 	return fmt.Sprintf("%s/api/logout", c.endpoint)
+}
+
+// IsReachable checks whether the Casdoor endpoint is reachable.
+func (c *CasdoorClient) IsReachable() bool {
+	client := &http.Client{Timeout: 2 * time.Second}
+	resp, err := client.Get(c.endpoint)
+	if err != nil {
+		return false
+	}
+	resp.Body.Close()
+	return true
 }
 
 // ExchangeCodeAndGetUser exchanges an authorization code for a token and returns the user's email and name.

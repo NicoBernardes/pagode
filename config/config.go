@@ -144,10 +144,9 @@ type (
 		Currency       string
 	}
 
-	// AuthConfig stores the authentication configuration.
+	// AuthConfig stores the authentication configuration (Casdoor SSO).
 	AuthConfig struct {
-		Provider string
-		Casdoor  CasdoorConfig
+		Casdoor CasdoorConfig
 	}
 
 	// CasdoorConfig stores the Casdoor-specific configuration.
@@ -195,7 +194,6 @@ func GetConfig() (Config, error) {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	// Explicitly bind Casdoor env vars so Viper picks them up.
-	viper.BindEnv("auth.provider")
 	viper.BindEnv("auth.casdoor.endpoint")
 	viper.BindEnv("auth.casdoor.clientid")
 	viper.BindEnv("auth.casdoor.clientsecret")
